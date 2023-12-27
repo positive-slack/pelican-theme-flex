@@ -1,0 +1,15 @@
+{% if GISCUS_ENABLED and article.status != "draft" %}
+<!-- Giscus -->
+<div id="gisqus_thread"></div>
+<script id="giscus-script" src="https://giscus.app/client.js" data-repo='{{ GISCUS_REPO }}'
+    data-repo-id='{{ GISCUS_REPO_ID }}' data-category='{{ GISCUS_CATEGORY }}'
+    data-category-id='{{ GISCUS_CATEGORY_ID }}' data-mapping='{{ GISCUS_MAPPING }}' data-strict='{{ GISCUS_STRICT }}'
+    data-reactions-enabled='{{ GISCUS_REACTIONS_ENABLED }}' data-emit-metadata="0"
+    data-input-position='{{ GISCUS_INPUT_POSITION }}' data-theme='{{ GISCUS_THEME }}' data-lang='{{ GISCUS_LANG }}'
+    crossorigin="anonymous" async>
+    </script>
+<noscript>
+    {{ _('Please enable JavaScript to view comments.') }}
+</noscript>
+<!-- End Giscus -->
+{% endif %}
