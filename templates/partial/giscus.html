@@ -1,13 +1,58 @@
 {% if GISCUS_ENABLED and article.status != "draft" %}
 <!-- Giscus -->
-<div id="gisqus_thread"></div>
-<script id="giscus-script" src="https://giscus.app/client.js" data-repo='{{ GISCUS_REPO }}'
-    data-repo-id='{{ GISCUS_REPO_ID }}' data-category='{{ GISCUS_CATEGORY }}'
-    data-category-id='{{ GISCUS_CATEGORY_ID }}' data-mapping='{{ GISCUS_MAPPING }}' data-strict='{{ GISCUS_STRICT }}'
-    data-reactions-enabled='{{ GISCUS_REACTIONS_ENABLED }}' data-emit-metadata="0"
-    data-input-position='{{ GISCUS_INPUT_POSITION }}' data-theme='{{ GISCUS_THEME }}' data-lang='{{ GISCUS_LANG }}'
-    crossorigin="anonymous" async>
-    </script>
+<script>
+    function getCurrentTheme() {
+        const currentTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+        return currentTheme;
+    }
+
+    function updateGiscusTheme() {
+        console.log("updateGiscusTheme() called");
+
+        function sendMessage(message) {
+            const iframe = document.querySelector('iframe.giscus-frame');
+            if (!iframe) return;
+            iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+
+        const currentTheme = getCurrentTheme();
+        console.log("Changing theme to ", currentTheme);
+        sendMessage({
+            setConfig: {
+                theme: currentTheme,
+            },
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const giscusAttributes = {
+            "src": "https://giscus.app/client.js",
+            "data-repo": "{{ GISCUS_REPO }}",
+            "data-repo-id": "{{ GISCUS_REPO_ID }}",
+            "data-category": "{{ GISCUS_CATEGORY }}",
+            "data-category-id": "{{ GISCUS_CATEGORY_ID }}",
+            "data-mapping": "{{ GISCUS_MAPPING }}",
+            "data-strict": "1",
+            "data-reactions-enabled": "{{ GISCUS_REACTIONS_ENABLED }}",
+            "data-emit-metadata": "0",
+            "data-input-position": "bottom",
+            "data-theme": getCurrentTheme(),
+            "data-lang": "en",
+            "crossorigin": "anonymous",
+            "async": "",
+        };
+
+        // Dynamically create script tag
+        const giscusScript = document.createElement("script");
+        Object.entries(giscusAttributes).forEach(([key, value]) => giscusScript.setAttribute(key, value));
+        const targetElement = document.querySelector('article');
+        targetElement.appendChild(giscusScript);
+
+        // Update giscus theme when theme switcher is clicked
+        document.body.addEventListener('themeChange', updateGiscusTheme);
+    });
+</script>
+
 <noscript>
     {{ _('Please enable JavaScript to view comments.') }}
 </noscript>
