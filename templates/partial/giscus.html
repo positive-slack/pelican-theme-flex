@@ -2,8 +2,22 @@
 <!-- Giscus -->
 <script>
     function getCurrentTheme() {
-        const currentTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
-        return currentTheme;
+        if (document.body.classList.contains('dark-theme')) {
+            return 'dark'
+        } else if (document.body.classList.contains('light-theme')) {
+            return 'light'
+        } else {
+            var darkThemeMatch = window.matchMedia('(prefers-color-scheme: dark)');
+            var theme = localStorage.getItem('themeOverride');
+            if (theme !== 'light' && theme !== 'dark') {
+                if (theme === 'browser' || enableAutoDetectTheme) {
+                    theme = darkThemeMatch.matches ? 'dark' : 'light';
+                } else {
+                    theme = "{{ THEME_COLOR }}";
+                }
+            }
+            return theme;
+        }
     }
 
     function updateGiscusTheme() {
@@ -47,6 +61,7 @@
         Object.entries(giscusAttributes).forEach(([key, value]) => giscusScript.setAttribute(key, value));
         const targetElement = document.querySelector('article');
         targetElement.appendChild(giscusScript);
+        updateGiscusTheme()
 
         // Update giscus theme when theme switcher is clicked
         document.body.addEventListener('themeChange', updateGiscusTheme);
