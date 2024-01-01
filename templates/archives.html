@@ -7,21 +7,48 @@
   <header>
     <h1 id="archives">{{ _('Archives') }}</h1>
   </header>
-  <div>
-    <dl>
-      {% set previous_date = False %}
 
-      {% for article in dates %}
-        {% if article.locale_date != previous_date %}
-          {% set previous_date = article.locale_date %}
-          <dt>{{ article.locale_date }}</dt>
+  <div class="row-fluid">
+    <div class="span10 offset2">
+      <div class="blog-archives">
+        {% for article in dates %}
+        {% set year = article.date.strftime('%Y') %}
+        {% if loop.first %}
+        <h2 id="{{ year }}"><a href="#{{ year }}">{{ year }}</a></h2>
+        {% else %}
+        {% set prevyear = loop.previtem.date.strftime('%Y') %}
+        {% if prevyear != year %}
+        <h2 id="{{ year }}"><a href="#{{ year }}">{{ year }}</a></h2>
+        {% endif %}
         {% endif %}
 
-        <dd>
-          <a href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a>
-        </dd>
-      {% endfor %}
-    </dl>
-  </div>
+        {% if loop.last %}
+        <div itemscope class="last-entry-of-year">
+          {% else %}
+          {% set next_year = loop.nextitem.date.strftime('%Y') %}
+
+          {% if next_year != year %}
+          <div itemscope class="last-entry-of-year">
+            {% else %}
+            <div itemscope>
+              {% endif %}
+              {% endif %}
+
+              <a href="{{ SITEURL }}/{{ article.url }}">
+                {{ article.title }}
+                {% if article.subtitle %}
+                <small class="subtitle">
+                  {{ article.subtitle }}
+                </small>
+                {% endif %}
+              </a>
+              <time itemprop="dateCreated" datetime="{{ article.date.isoformat() }}">
+                {{ article.locale_date }}
+              </time>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
 </article>
 {% endblock %}
